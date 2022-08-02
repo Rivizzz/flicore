@@ -1,8 +1,18 @@
-# flicore
-"Flicore" website
+"Flicore"
 
-This is a multi-page website written in clean and valid code.
+This is a multi-page semanctic and clean HTML template for real estate agency.
 
-The following was used in the work:
-
-gulp&webpack (Optimization + convenience), css3, html5, flexbox, pure javascript, SVG, scss, 
+Project features:
+-PSD to HTML high-quality converting,
+-CSS3,
+-SCSS,
+-html5,
+-flexbox,
+-javascript,
+-SVG,
+-Swiper slider,
+-Popups,
+-Custom scrollbar,
+-UI Animation,
+-UI/UX Prototyping,
+-BEM
