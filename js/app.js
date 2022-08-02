@@ -1,6 +1,6 @@
 (() => {
     "use strict";
-    const modules_flsModules = {};
+    const flsModules = {};
     function isWebp() {
         function testWebP(callback) {
             let webP = new Image;
@@ -129,11 +129,44 @@
             }
         }));
     }
-    function functions_FLS(message) {
+    function menuClose() {
+        bodyUnlock();
+        document.documentElement.classList.remove("menu-open");
+    }
+    function FLS(message) {
         setTimeout((() => {
             if (window.FLS) console.log(message);
         }), 0);
     }
+    let gotoblock_gotoBlock = (targetBlock, noHeader = false, speed = 500, offsetTop = 0) => {
+        const targetBlockElement = document.querySelector(targetBlock);
+        if (targetBlockElement) {
+            let headerItem = "";
+            let headerItemHeight = 0;
+            if (noHeader) {
+                headerItem = "header.header";
+                headerItemHeight = document.querySelector(headerItem).offsetHeight;
+            }
+            let options = {
+                speedAsDuration: true,
+                speed,
+                header: headerItem,
+                offset: offsetTop,
+                easing: "easeOutQuad"
+            };
+            document.documentElement.classList.contains("menu-open") ? menuClose() : null;
+            if ("undefined" !== typeof SmoothScroll) (new SmoothScroll).animateScroll(targetBlockElement, "", options); else {
+                let targetBlockElementPosition = targetBlockElement.getBoundingClientRect().top + scrollY;
+                targetBlockElementPosition = headerItemHeight ? targetBlockElementPosition - headerItemHeight : targetBlockElementPosition;
+                targetBlockElementPosition = offsetTop ? targetBlockElementPosition - offsetTop : targetBlockElementPosition;
+                window.scrollTo({
+                    top: targetBlockElementPosition,
+                    behavior: "smooth"
+                });
+            }
+            FLS(`[gotoBlock]: Юхуу...едем к ${targetBlock}`);
+        } else FLS(`[gotoBlock]: Ой ой..Такого блока нет на странице: ${targetBlock}`);
+    };
     function formFieldsInit(options = {
         viewPass: false
     }) {
@@ -225,11 +258,11 @@
                     const checkbox = checkboxes[index];
                     checkbox.checked = false;
                 }
-                if (modules_flsModules.select) {
+                if (flsModules.select) {
                     let selects = form.querySelectorAll(".select");
                     if (selects.length) for (let index = 0; index < selects.length; index++) {
                         const select = selects[index].querySelector("select");
-                        modules_flsModules.select.selectBuild(select);
+                        flsModules.select.selectBuild(select);
                     }
                 }
             }), 0);
@@ -238,6 +271,71 @@
             return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(formRequiredItem.value);
         }
     };
+    function formSubmit(options = {
+        validate: true
+    }) {
+        const forms = document.forms;
+        if (forms.length) for (const form of forms) {
+            form.addEventListener("submit", (function(e) {
+                const form = e.target;
+                formSubmitAction(form, e);
+            }));
+            form.addEventListener("reset", (function(e) {
+                const form = e.target;
+                formValidate.formClean(form);
+            }));
+        }
+        async function formSubmitAction(form, e) {
+            const error = !form.hasAttribute("data-no-validate") ? formValidate.getErrors(form) : 0;
+            if (0 === error) {
+                const ajax = form.hasAttribute("data-ajax");
+                if (ajax) {
+                    e.preventDefault();
+                    const formAction = form.getAttribute("action") ? form.getAttribute("action").trim() : "#";
+                    const formMethod = form.getAttribute("method") ? form.getAttribute("method").trim() : "GET";
+                    const formData = new FormData(form);
+                    form.classList.add("_sending");
+                    const response = await fetch(formAction, {
+                        method: formMethod,
+                        body: formData
+                    });
+                    if (response.ok) {
+                        await response.json();
+                        form.classList.remove("_sending");
+                        formSent(form);
+                    } else {
+                        alert("Ошибка");
+                        form.classList.remove("_sending");
+                    }
+                } else if (form.hasAttribute("data-dev")) {
+                    e.preventDefault();
+                    formSent(form);
+                }
+            } else {
+                e.preventDefault();
+                const formError = form.querySelector("._form-error");
+                if (formError && form.hasAttribute("data-goto-error")) gotoblock_gotoBlock(formError, true, 1e3);
+            }
+        }
+        function formSent(form) {
+            document.dispatchEvent(new CustomEvent("formSent", {
+                detail: {
+                    form
+                }
+            }));
+            setTimeout((() => {
+                if (flsModules.popup) {
+                    const popup = form.dataset.popupMessage;
+                    popup ? flsModules.popup.open(popup) : null;
+                }
+            }), 0);
+            formValidate.formClean(form);
+            formLogging(`Форма отправлена!`);
+        }
+        function formLogging(message) {
+            FLS(`[Формы]: ${message}`);
+        }
+    }
     class SelectConstructor {
         constructor(props, data = null) {
             let defaultConfig = {
@@ -548,10 +646,10 @@
             }));
         }
         setLogging(message) {
-            this.config.logging ? functions_FLS(`[select]: ${message}`) : null;
+            this.config.logging ? FLS(`[select]: ${message}`) : null;
         }
     }
-    modules_flsModules.select = new SelectConstructor({});
+    flsModules.select = new SelectConstructor({});
     function getWindow_getWindow(node) {
         if (null == node) return window;
         if ("[object Window]" !== node.toString()) {
@@ -2693,7 +2791,7 @@
         render
     });
     const tippy_esm = tippy;
-    modules_flsModules.tippy = tippy_esm("[data-tippy-content]", {});
+    flsModules.tippy = tippy_esm("[data-tippy-content]", {});
     const tipsContainer = document.querySelector(".map-search__results");
     if (tipsContainer) if (document.documentElement.clientWidth > 1300) {
         const tipBody1 = document.getElementById("tipBody1");
@@ -6731,13 +6829,16 @@
     };
     const da = new DynamicAdapt("max");
     da.init();
-    const search = document.querySelector(".search");
-    const searchBtn = document.querySelector(".search__btn");
-    const searchField = document.querySelector(".search__txt");
-    searchBtn.addEventListener("click", (function(e) {
-        if (search.classList.contains("search-active") && 0 !== searchField.length) search.submit(); else {
-            this.classList.toggle("search__btn-active");
-            search.classList.toggle("search-active");
+    document.addEventListener("click", (function(e) {
+        const targetElement = e.target;
+        if (targetElement.closest(".search__icon") || targetElement.closest(".search__btn") || targetElement.closest(".search__txt")) document.documentElement.classList.add("search-open"); else if (!targetElement.closest(".search")) {
+            document.documentElement.classList.remove("search-open");
+            if (document.querySelector("._form-error")) {
+                const searchErrors = document.querySelectorAll("._form-error");
+                searchErrors.forEach((searchError => {
+                    searchError.classList.remove("_form-error");
+                }));
+            }
         }
     }));
     window.addEventListener("load", windowLoad);
@@ -6785,5 +6886,6 @@
     formFieldsInit({
         viewPass: false
     });
+    formSubmit();
     headerScroll();
 })();

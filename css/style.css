@@ -403,6 +403,7 @@ textarea.input {
   background: #000;
   position: absolute;
   top: 0;
+  opacity: 0;
   right: -200%;
   z-index: 4;
   -webkit-transition: all 0.3s ease 0s;
@@ -495,6 +496,7 @@ textarea.input {
 
 .menu-open .header__wrapper::after {
   right: 0;
+  opacity: 1;
 }
 
 .menu__list {
@@ -538,6 +540,15 @@ textarea.input {
   -webkit-transition: all 0.3s ease 0s;
   -o-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;
+  /*
+  .form__error{
+     position: absolute;
+     bottom: rem(-15);
+     font-size: rem(14);
+     left: rem(10);
+     color: #a3a0a0;
+  }
+  */
 }
 
 .search__txt {
@@ -552,21 +563,51 @@ textarea.input {
   transition: all 0.3s ease 0s;
 }
 
-.search__btn {
+.search__txt._form-error {
+  border: 1px solid rgba(255, 0, 0, 0.315);
+}
+
+.search ._icon-search {
   position: absolute;
   top: 0px;
-  right: 0px;
+  right: 5px;
   padding: 5px;
 }
 
-.search__btn svg {
+.search ._icon-search svg {
   width: 24px;
   fill: #fff;
 }
 
-.search-active .search__txt {
+.search__icon {
+  opacity: 1;
+  visibility: visible;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+}
+
+.search__btn {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+}
+
+.search-open .search__txt {
   width: 12.5rem;
   background-color: rgba(0, 0, 0, 0.6);
+}
+
+.search-open .search__icon {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.search-open .search__btn {
+  opacity: 1;
+  visibility: visible;
 }
 
 .icon-menu {
@@ -722,6 +763,10 @@ textarea.input {
   padding: 0px 30px 5px 0;
   width: 95%;
   color: #fff;
+}
+
+.footer__input._form-error {
+  border-bottom: 1px solid red;
 }
 
 .footer__socials {
@@ -4687,11 +4732,11 @@ textarea.input {
     display: block;
   }
 
-  .search__btn {
+  .search ._icon-search {
     padding: 5px;
   }
 
-  .search__btn svg {
+  .search ._icon-search svg {
     width: 32px;
   }
 
@@ -4819,7 +4864,7 @@ textarea.input {
     row-gap: 3.125rem;
   }
 
-  .search-active .search__txt {
+  .search-open .search__txt {
     width: 9.375rem;
   }
 
